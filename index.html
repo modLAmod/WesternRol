@@ -1170,6 +1170,7 @@
       { name:'Silver Hollow', biome:'mountain', x:84.3, y:22.7, desc:'Antigua comunidad minera, ahora casi fantasma.' },
       { name:'Hightrail Peak', biome:'mountain', main:true, x:71.5, y:27.6, desc:'Pueblo montañés aislado, clima duro y habitantes desconfiados.' },
       { name:'Frostbridge', biome:'mountain', x:70.3, y:35.6, desc:'Aldea construida sobre un puente natural de hielo.' },
+      { name:'Alto Cielo', biome:'mountain', x:88.5, y:11.5, desc:'Poblado indígena asentado en estas cumbres desde generaciones antes de la llegada del ferrocarril. Sus guías conocen pasos entre los picos que ningún mapa del Territorio refleja. Comercian con New Duskport, pero bajo sus propios términos, y nunca han confiado del todo en la ciudad eléctrica ni en las compañías que excavan sus montañas.' },
 
       { name:'Greenfield Bend', biome:'prairie', x:58.0, y:46.8, desc:'Aldea agrícola, famosa por su maíz.' },
       { name:'Dustfall Ridge', biome:'prairie', main:true, x:44.1, y:49.4, desc:'Asentamiento vaquero, rodeado de ranchos.' },
@@ -1254,7 +1255,6 @@
       { key:'esclavo', label:'Esclavo' }
     ];
     var STORAGE_KEY = 'personajes:list';
-    var hasStorage = (typeof window.storage !== 'undefined');
     var characters = [];
     var editingId = null;
     var activeTags = [];
@@ -1291,19 +1291,16 @@
     }
     buildTagPicker();
 
-    async function loadCharacters(){
-      if(hasStorage){
-        try{
-          var res = await window.storage.get(STORAGE_KEY, false);
-          characters = (res && res.value) ? JSON.parse(res.value) : [];
-        }catch(e){ characters = []; }
-      }
+    function loadCharacters(){
+      try{
+        var raw = localStorage.getItem(STORAGE_KEY);
+        characters = raw ? JSON.parse(raw) : [];
+      }catch(e){ characters = []; }
       render();
     }
 
-    async function persist(){
-      if(!hasStorage) return;
-      try{ await window.storage.set(STORAGE_KEY, JSON.stringify(characters), false); }
+    function persist(){
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(characters)); }
       catch(e){ console.error('No se pudo guardar el registro de personajes', e); }
     }
 
@@ -1435,7 +1432,6 @@
       { key:'comercio',  label:'Comercio' }
     ];
     var STORAGE_KEY = 'economia:list';
-    var hasStorage = (typeof window.storage !== 'undefined');
     var items = [];
     var activeFilter = 'all';
 
@@ -1482,13 +1478,11 @@
       showStatus._t = setTimeout(function(){ statusEl.classList.remove('show'); statusEl.textContent = ''; }, 1600);
     }
 
-    async function loadItems(){
-      if(hasStorage){
-        try{
-          var res = await window.storage.get(STORAGE_KEY, false);
-          items = (res && res.value) ? JSON.parse(res.value) : null;
-        }catch(e){ items = null; }
-      }
+    function loadItems(){
+      try{
+        var raw = localStorage.getItem(STORAGE_KEY);
+        items = raw ? JSON.parse(raw) : null;
+      }catch(e){ items = null; }
       if(!items || !items.length){
         items = defaultData();
         persist();
@@ -1496,9 +1490,8 @@
       render();
     }
 
-    async function persist(){
-      if(!hasStorage) return;
-      try{ await window.storage.set(STORAGE_KEY, JSON.stringify(items), false); showStatus('Guardado ✓'); }
+    function persist(){
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); showStatus('Guardado ✓'); }
       catch(e){ console.error('No se pudo guardar la economía', e); showStatus('Error al guardar'); }
     }
 
