@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Astraelis Frontier - Mundo Western Fantástico</title>
+    <title>Astraelis Frontier – Mapa y Carteles Wanted</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Fuentes estilo western -->
@@ -22,44 +22,28 @@
             --rojo-rdr2: #8b1e1e;
             --arena: #d8c4a3;
             --negro-profundo: #0a0a0a;
-            --sombra: rgba(0,0,0,0.6);
-        }
-
-        * {
-            box-sizing: border-box;
         }
 
         body {
             margin: 0;
             padding: 0;
-            background: url('https://i.imgur.com/0m0Q8pC.jpeg') center/cover fixed;
+            background: #0d0a07 url('https://i.imgur.com/0m0Q8pC.jpeg') center/cover fixed;
             font-family: 'Cinzel', serif;
             color: var(--arena);
             text-shadow: 2px 2px 4px var(--negro-profundo);
         }
 
-        .grain {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background: url('https://i.imgur.com/8fK4Q0C.png') repeat;
-            opacity: 0.15;
-            mix-blend-mode: overlay;
-            z-index: 9999;
-        }
-
         /* NAVBAR */
-
         nav {
-            position: sticky;
-            top: 0;
-            z-index: 50;
             background: rgba(20, 10, 5, 0.95);
             border-bottom: 4px solid var(--oro);
             padding: 12px 20px;
             display: flex;
             justify-content: center;
             gap: 30px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
         nav a {
@@ -77,12 +61,11 @@
             text-shadow: 0 0 10px var(--oro);
         }
 
-        /* CONTENEDOR PRINCIPAL */
-
+        /* CONTENEDOR */
         .container {
             width: 95%;
             max-width: 1200px;
-            margin: 30px auto 40px auto;
+            margin: 30px auto;
             padding: 20px;
             background: rgba(20, 10, 5, 0.78);
             border: 4px solid var(--oro);
@@ -91,463 +74,124 @@
             backdrop-filter: blur(3px);
         }
 
-        /* TITULOS */
-
-        h1, h2, h3 {
+        h1, h2 {
             font-family: 'IM Fell English SC', serif;
             color: var(--oro);
-            letter-spacing: 2px;
             text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         h1 {
             font-size: 3rem;
             text-align: center;
-            margin: 0 0 10px 0;
-            text-shadow: 4px 4px 8px var(--negro-profundo);
+            margin-bottom: 10px;
         }
 
         h2 {
             font-size: 2rem;
             border-bottom: 2px solid var(--oro);
             padding-bottom: 5px;
-            margin-top: 30px;
+            margin-top: 40px;
         }
 
-        h3 {
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-        }
-
-        p {
-            line-height: 1.6;
-            font-size: 0.98rem;
-        }
-
-        /* HERO */
-
-        .hero {
-            display: grid;
-            grid-template-columns: 1.4fr 1fr;
-            gap: 20px;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .hero-text {
-            padding: 15px;
-        }
-
-        .hero-subtitle {
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: var(--arena);
-            opacity: 0.9;
-        }
-
-        .hero-title {
-            font-size: 2.4rem;
-            margin: 10px 0;
-        }
-
-        .hero-buttons {
-            margin-top: 15px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .hero-poster {
-            position: relative;
-        }
-
-        .hero-poster img {
+        /* IMÁGENES */
+        .mapa-img, .wanted-img {
             width: 100%;
-            border: 4px solid var(--cuero);
-            border-radius: 4px;
+            border: 6px solid var(--cuero);
+            border-radius: 6px;
             box-shadow: 0 0 25px var(--negro-profundo);
             filter: sepia(35%) contrast(1.1);
             transition: 0.3s;
         }
 
-        .hero-poster img:hover {
-            filter: sepia(15%) contrast(1.3) brightness(1.05);
-            transform: scale(1.02);
-        }
-
-        .hero-stamp {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.7);
-            border: 2px solid var(--oro);
-            padding: 5px 10px;
-            font-family: 'IM Fell English SC', serif;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
-        /* BOTONES */
-
-        .btn {
-            background: linear-gradient(var(--cuero), var(--cuero-oscuro));
-            border: 3px solid var(--oro);
-            padding: 10px 22px;
-            color: var(--arena);
-            font-family: 'Cinzel', serif;
-            font-size: 0.95rem;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: 0.3s;
-            text-transform: uppercase;
-            box-shadow: 0 0 10px var(--negro-profundo);
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn:hover {
-            background: var(--rojo-rdr2);
-            transform: scale(1.05);
-            box-shadow: 0 0 20px var(--oro);
-        }
-
-        .btn-secondary {
-            border-color: var(--cuero);
-            background: rgba(0,0,0,0.6);
-        }
-
-        /* TARJETAS GENERALES */
-
-        .card {
-            background: rgba(30, 15, 10, 0.9);
-            border: 3px solid var(--cuero);
-            padding: 18px;
-            margin: 18px 0;
-            border-radius: 6px;
-            box-shadow: 0 0 20px var(--negro-profundo);
-            backdrop-filter: blur(2px);
-        }
-
-        .card:hover {
-            border-color: var(--oro);
+        .mapa-img:hover, .wanted-img:hover {
+            filter: sepia(10%) contrast(1.3) brightness(1.1);
             transform: scale(1.01);
-            transition: 0.3s;
         }
 
-        /* SECCIÓN PERSONAJES */
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .character-card {
-            text-align: center;
-        }
-
-        .character-img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            border: 4px solid var(--cuero);
-            border-radius: 4px;
+        /* SECCIONES */
+        .section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(30, 15, 10, 0.85);
+            border: 3px solid var(--cuero);
+            border-radius: 6px;
             box-shadow: 0 0 20px var(--negro-profundo);
-            filter: sepia(40%) contrast(1.1);
-        }
-
-        .tagline {
-            font-style: italic;
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        /* SECCIÓN BIOMAS / MAPA */
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 15px;
-        }
-
-        .map-img {
-            width: 100%;
-            height: 260px;
-            object-fit: cover;
-            border: 4px solid var(--cuero);
-            border-radius: 4px;
-            box-shadow: 0 0 20px var(--negro-profundo);
-            filter: sepia(35%) contrast(1.1);
-        }
-
-        /* WANTED */
-
-        .wanted-board {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .wanted-card {
-            background: #f5e0b8;
-            color: #3b2415;
-            text-shadow: none;
-            border: 3px solid #3b2415;
-            padding: 12px;
-            border-radius: 4px;
-            font-family: 'IM Fell English SC', serif;
-            position: relative;
-        }
-
-        .wanted-card::before,
-        .wanted-card::after {
-            content: '';
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            background: #c9b18a;
-            border-radius: 50%;
-            border: 2px solid #3b2415;
-        }
-
-        .wanted-card::before {
-            top: -10px;
-            left: 10px;
-        }
-
-        .wanted-card::after {
-            top: -10px;
-            right: 10px;
-        }
-
-        .wanted-title {
-            font-size: 1.2rem;
-            text-align: center;
-            margin-bottom: 5px;
-        }
-
-        .wanted-reward {
-            text-align: center;
-            font-size: 1rem;
-            margin-top: 5px;
         }
 
         /* FOOTER */
-
         footer {
             text-align: center;
-            padding: 15px;
-            margin-top: 25px;
+            padding: 20px;
+            margin-top: 40px;
             color: var(--arena);
-            font-size: 0.9rem;
             opacity: 0.8;
-        }
-
-        /* RESPONSIVE */
-
-        @media (max-width: 900px) {
-            .hero {
-                grid-template-columns: 1fr;
-            }
-            .grid-3 {
-                grid-template-columns: 1fr 1fr;
-            }
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-            .wanted-board {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .grid-3,
-            .wanted-board {
-                grid-template-columns: 1fr;
-            }
-            h1 {
-                font-size: 2.2rem;
-            }
-            .hero-title {
-                font-size: 1.8rem;
-            }
         }
     </style>
 </head>
-<body>
 
-    <!-- Capa de grano / polvo -->
-    <div class="grain"></div>
+<body>
 
     <!-- NAVBAR -->
     <nav>
-        <a href="#inicio">Inicio</a>
-        <a href="#personajes">Personajes</a>
-        <a href="#biomas">Biomas</a>
-        <a href="#wanted">Carteles</a>
+        <a href="#mapa">Mapa</a>
+        <a href="#wanted">Carteles Wanted</a>
         <a href="#info">Información</a>
     </nav>
 
-    <div class="container" id="inicio">
-        <!-- HERO -->
-        <section class="hero">
-            <div class="hero-text">
-                <div class="hero-subtitle">Academia Astraelis · Mundo de Rol</div>
-                <h1 class="hero-title">Astraelis Frontier</h1>
-                <p>
-                    Un mundo donde la pólvora se mezcla con la magia antigua, los forajidos cabalgan junto a criaturas
-                    imposibles y cada amanecer puede ser el último. Bienvenida al Oeste más salvaje que jamás pisaste.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#personajes" class="btn">Ver personajes</a>
-                    <a href="#biomas" class="btn btn-secondary">Explorar biomas</a>
-                    <a href="#wanted" class="btn">Carteles Wanted</a>
-                </div>
-            </div>
+    <div class="container">
 
-            <div class="hero-poster">
-                <img src="https://i.imgur.com/7vX8xgK.jpeg" alt="Póster estilo Red Dead Redemption 2">
-                <div class="hero-stamp">Redemption is never free</div>
-            </div>
-        </section>
+        <h1>Astraelis Frontier</h1>
+        <p style="text-align:center; font-size:1.1rem;">
+            Territorio de New Duskport · Año 1870  
+            <br>Magia, pólvora y leyendas del Oeste Fantástico
+        </p>
 
-        <!-- PERSONAJES -->
-        <section id="personajes">
-            <h2>Personajes principales</h2>
+        <!-- MAPA -->
+        <section id="mapa" class="section">
+            <h2>Mapa del Territorio</h2>
             <p>
-                Héroes rotos, forajidos con códigos propios y almas marcadas por la frontera. Cada uno arrastra su
-                propia leyenda… y sus propios pecados.
+                Este es el mapa oficial del territorio de Astraelis Frontier, mostrando ciudades, pueblos,
+                regiones, rutas y zonas peligrosas. Perfecto para ambientar misiones, viajes, rutas de caravanas
+                o eventos de rol.
             </p>
 
-            <div class="grid-3">
-                <div class="card character-card">
-                    <img class="character-img" src="https://i.imgur.com/0qgQp0b.jpeg" alt="Pistolero">
-                    <h3>El Pistolero Caído</h3>
-                    <p class="tagline">“No disparo primero… pero siempre disparo el último.”</p>
-                    <p>
-                        Antiguo guardián de la ley, ahora perseguido por ella. Su puntería es tan famosa como la
-                        masacre que lo condenó.
-                    </p>
-                </div>
-
-                <div class="card character-card">
-                    <img class="character-img" src="https://i.imgur.com/3v4uZpL.jpeg" alt="Bruja del desierto">
-                    <h3>La Bruja del Desierto</h3>
-                    <p class="tagline">“La arena recuerda la sangre que ha bebido.”</p>
-                    <p>
-                        Tejedora de maldiciones y pactos antiguos. Sus ojos ven más allá del horizonte… y del tiempo.
-                    </p>
-                </div>
-
-                <div class="card character-card">
-                    <img class="character-img" src="https://i.imgur.com/9qV6z0N.jpeg" alt="Cazarrecompensas">
-                    <h3>El Cazarrecompensas</h3>
-                    <p class="tagline">“No persigo hombres. Persigo deudas.”</p>
-                    <p>
-                        Silencioso, implacable, siempre un paso por detrás de su presa… hasta que ya es demasiado tarde.
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <!-- BIOMAS Y MAPA -->
-        <section id="biomas">
-            <h2>Biomas y territorios</h2>
-
-            <div class="grid-2">
-                <div class="card">
-                    <h3>La Frontera de Ceniza</h3>
-                    <p>
-                        Llanuras quemadas por antiguos rituales, donde la tierra humea al anochecer y las sombras
-                        parecen moverse solas. Solo los más desesperados se atreven a cruzarla.
-                    </p>
-
-                    <h3>Los Picos del Cuervo</h3>
-                    <p>
-                        Montañas afiladas como cuchillas, hogar de bandidos, bestias y secretos enterrados en la nieve
-                        roja. Cada eco puede ser un disparo… o algo peor.
-                    </p>
-
-                    <h3>El Pantano de las Luciérnagas</h3>
-                    <p>
-                        Un lugar donde la luz nunca es de fiar. Las luciérnagas guían a los viajeros… pero nadie sabe
-                        si hacia la salvación o hacia la tumba.
-                    </p>
-                </div>
-
-                <div class="card">
-                    <img class="map-img" src="https://i.imgur.com/4pZkq0V.jpeg" alt="Mapa estilo western">
-                    <p style="margin-top:10px; font-size:0.9rem;">
-                        Mapa aproximado de Astraelis Frontier. Cada marca es una historia, cada camino, una decisión
-                        que no tendrá vuelta atrás.
-                    </p>
-                </div>
-            </div>
+            <!-- AQUÍ VA TU IMAGEN DEL MAPA -->
+            <img class="mapa-img" src="TU_IMAGEN_DEL_MAPA_AQUÍ.jpeg" alt="Mapa del territorio">
         </section>
 
         <!-- WANTED -->
-        <section id="wanted">
+        <section id="wanted" class="section">
             <h2>Carteles de “Wanted”</h2>
             <p>
-                Algunos nombres se susurran en las tabernas, otros se gritan en los patíbulos. Todos tienen precio.
+                Tablón oficial del Sheriff de New Duskport. Aquí se muestran los criminales más buscados del Oeste,
+                con recompensas, descripciones y crímenes cometidos.
             </p>
 
-            <div class="wanted-board">
-                <div class="wanted-card">
-                    <div class="wanted-title">WANTED</div>
-                    <p style="text-align:center; font-weight:bold;">“La Dama de las Sombras”</p>
-                    <p style="font-size:0.9rem;">
-                        Acusada de brujería, asesinato y desaparición de caravanas enteras. Última vez vista en el
-                        Pantano de las Luciérnagas.
-                    </p>
-                    <div class="wanted-reward">RECOMPENSA: 500 MONEDAS DE ORO</div>
-                </div>
-
-                <div class="wanted-card">
-                    <div class="wanted-title">DEAD OR ALIVE</div>
-                    <p style="text-align:center; font-weight:bold;">“El Cuervo Blanco”</p>
-                    <p style="font-size:0.9rem;">
-                        Líder de una banda de forajidos. Responsable de asaltos a trenes, bancos y convoyes mágicos.
-                    </p>
-                    <div class="wanted-reward">RECOMPENSA: 800 MONEDAS DE ORO</div>
-                </div>
-
-                <div class="wanted-card">
-                    <div class="wanted-title">WANTED</div>
-                    <p style="text-align:center; font-weight:bold;">“El Predicador”</p>
-                    <p style="font-size:0.9rem;">
-                        Fanático que asegura hablar en nombre de antiguas deidades del Oeste. Donde predica, la gente
-                        desaparece.
-                    </p>
-                    <div class="wanted-reward">RECOMPENSA: 650 MONEDAS DE ORO</div>
-                </div>
-            </div>
+            <!-- AQUÍ VA TU IMAGEN DEL TABLÓN DE WANTED -->
+            <img class="wanted-img" src="TU_IMAGEN_DEL_TABLON_AQUÍ.jpeg" alt="Carteles Wanted">
         </section>
 
-        <!-- INFO EXTRA / PIE -->
-        <section id="info">
-            <h2>Información de rol</h2>
-            <div class="card">
-                <p>
-                    Este mundo está pensado para un rol western-fantástico: duelos al amanecer, trenes asaltados,
-                    criaturas imposibles, magia prohibida y decisiones que dejan cicatriz. Adáptalo a tu servidor,
-                    a tus normas y a tu gente.
-                </p>
-                <p>
-                    Puedes usar esta página como <strong>landing de lore</strong> para tu comunidad, como base para
-                    un <strong>panel de personajes</strong> o como presentación de tu <strong>campaña principal</strong>.
-                </p>
-                <p style="font-size:0.9rem; opacity:0.9;">
-                    Edita textos, imágenes y nombres a tu gusto. La estructura ya está lista para que solo tengas que
-                    cambiar contenido.
-                </p>
-            </div>
+        <!-- INFO -->
+        <section id="info" class="section">
+            <h2>Información de Rol</h2>
+            <p>
+                Puedes usar este mapa y tablón como base para misiones, eventos, campañas o ambientación general
+                del servidor. Si quieres, puedo crear:
+            </p>
+
+            <ul>
+                <li>Misiones basadas en cada cartel</li>
+                <li>Rutas de viaje según el mapa</li>
+                <li>Biomas y criaturas del territorio</li>
+                <li>Historia completa de New Duskport</li>
+            </ul>
         </section>
 
         <footer>
             Astraelis Frontier · Academia Astraelis · Estética inspirada en Red Dead Redemption 2
         </footer>
+
     </div>
 
 </body>
