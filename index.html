@@ -660,6 +660,37 @@
     .photo-upload{ flex-wrap:wrap; }
   }
 
+  /* ---------- AUTENTICACIÓN ---------- */
+  .auth-box{ display:flex; align-items:center; gap:.6rem; flex-shrink:0; }
+  .auth-btn{
+    font-family:var(--utility); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase;
+    padding:.45rem .9rem; border:1px solid var(--brass); background:transparent; color:var(--brass);
+    cursor:pointer; transition:all .15s; white-space:nowrap;
+  }
+  .auth-btn:hover{ background:var(--brass); color:var(--leather-deep); }
+  .auth-btn:disabled{ opacity:.6; cursor:default; }
+  .auth-user{
+    font-family:var(--display); font-size:.9rem; color:var(--electric);
+    display:flex; align-items:center; gap:.4rem; white-space:nowrap;
+  }
+  .auth-user::before{ content:''; width:7px; height:7px; border-radius:50%; background:#7CFC9A; box-shadow:0 0 6px 1px #7CFC9A; }
+  .field-error{
+    font-family:var(--utility); font-size:.74rem; color:var(--rust-bright);
+    min-height:1.1em; margin:-.6rem 0 .8rem;
+  }
+
+  .cloud-banner{
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.9rem;
+    background:#3a2a18; border-bottom:1px solid var(--brass); color:#e9dcc0;
+    padding:.7rem 1.5rem; font-family:var(--body); font-size:.84rem;
+  }
+  .cloud-banner-text strong{ color:var(--electric); font-weight:600; }
+  .cloud-banner-actions{ display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
+  .cloud-banner-id{
+    font-family:var(--utility); font-size:.78rem; background:#1c1208; color:#ffd27a;
+    padding:.4rem .6rem; border:1px dashed var(--brass); user-select:all;
+  }
+
   /* ---------- ECONOMÍA ---------- */
   .econ-toolbar{
     display:flex; justify-content:space-between; align-items:center;
@@ -703,6 +734,9 @@
   }
   .econ-input:hover{ background:#dcc89a; }
   .econ-input:focus{ outline:none; background:#fbf2da; border-color:var(--rust); }
+  .econ-input[readonly]{ cursor:default; }
+  .econ-input[readonly]:hover{ background:transparent; }
+  .econ-select:disabled{ opacity:.9; cursor:default; }
   .econ-input.econ-concepto{ font-weight:600; min-width:11rem; }
   .econ-input.econ-valor{ font-family:var(--utility); color:var(--rust); width:6.5rem; }
   .econ-input.econ-unidad{ width:8.5rem; }
@@ -743,7 +777,21 @@
     <li><a href="#economia">Economía</a></li>
     <li><a href="#buscan">Se Buscan</a></li>
   </ul>
+  <div class="auth-box" id="authBox"></div>
 </nav>
+
+<div class="cloud-banner" id="cloudSetupBanner" style="display:none;">
+  <div class="cloud-banner-text">
+    <strong>☁️ Sincronización en la nube sin configurar.</strong>
+    Créala una vez y pega el ID en el código (variable <code>BLOB_ID</code>) antes de subir la página a tu hosting definitivo.
+  </div>
+  <div class="cloud-banner-actions">
+    <button type="button" class="auth-btn" id="cloudSetupCreateBtn">Crear almacenamiento en la nube</button>
+    <code class="cloud-banner-id" id="cloudSetupId" style="display:none;"></code>
+    <button type="button" class="auth-btn" id="cloudSetupCopyBtn" style="display:none;">Copiar ID</button>
+  </div>
+</div>
+
 
 <header class="hero" id="top">
   <div class="hero-stars"></div>
@@ -977,6 +1025,28 @@
     </div>
   </section>
 
+  <div class="modal-overlay" id="authModalOverlay">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="authModalTitle" style="max-width:380px;">
+      <button type="button" class="modal-close" id="authModalClose" aria-label="Cerrar">×</button>
+      <h3 id="authModalTitle" class="modal-title">Iniciar sesión</h3>
+      <form id="authForm">
+        <div class="field">
+          <label for="authUser">Usuario</label>
+          <input type="text" id="authUser" class="input-western" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="authPass">Contraseña</label>
+          <input type="password" id="authPass" class="input-western" autocomplete="current-password" required>
+        </div>
+        <p class="field-error" id="authError"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="authCancelBtn">Cancelar</button>
+          <button type="submit" class="btn-primary">Entrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="charModalOverlay">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="charModalTitle">
       <button type="button" class="modal-close" id="charModalClose" aria-label="Cerrar">×</button>
@@ -1150,6 +1220,200 @@
     });
   }
 
+  /* ---------- AUTENTICACIÓN ---------- */
+  // Único usuario permitido: MK / 1234. Aviso: al ser una página estática sin
+  // servidor, esta contraseña es visible para cualquiera que mire el código
+  // fuente. No es seguridad real, solo evita ediciones accidentales de visitas.
+  var Auth = (function(){
+    var KEY = 'duskport_auth_user';
+    var listeners = [];
+    function isLoggedIn(){
+      try{ return localStorage.getItem(KEY) === 'MK'; }catch(e){ return false; }
+    }
+    function login(user, pass){
+      if(user === 'MK' && pass === '1234'){
+        try{ localStorage.setItem(KEY, 'MK'); }catch(e){}
+        notify();
+        return true;
+      }
+      return false;
+    }
+    function logout(){
+      try{ localStorage.removeItem(KEY); }catch(e){}
+      notify();
+    }
+    function onChange(fn){ listeners.push(fn); }
+    function notify(){ listeners.forEach(function(fn){ try{ fn(isLoggedIn()); }catch(e){} }); }
+    return { isLoggedIn:isLoggedIn, login:login, logout:logout, onChange:onChange };
+  })();
+
+  /* ---------- SINCRONIZACIÓN EN LA NUBE ----------
+     Usa jsonblob.com (gratis, sin cuentas). BLOB_ID se rellena UNA VEZ:
+     1) Inicia sesión como MK.
+     2) En el aviso superior, pulsa "Crear almacenamiento en la nube".
+     3) Copia el ID que aparece y pégalo aquí abajo, entre las comillas.
+     4) Guarda este archivo y súbelo a tu hosting definitivo.
+     A partir de ese momento todos los dispositivos que visiten esa URL
+     leerán y escribirán el mismo almacenamiento remoto. Mientras BLOB_ID
+     esté vacío, los datos solo se guardan en este navegador. */
+  var Sync = (function(){
+    var BLOB_ID = ''; // <-- PEGA AQUÍ EL ID TRAS CREAR EL ALMACENAMIENTO
+    var API = 'https://jsonblob.com/api/jsonBlob';
+    var CACHE_KEY = 'duskport_cloud_cache';
+
+    function isConfigured(){ return !!BLOB_ID; }
+
+    function cached(){
+      try{ var raw = localStorage.getItem(CACHE_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
+    }
+    function cache(data){
+      try{ localStorage.setItem(CACHE_KEY, JSON.stringify(data)); }catch(e){}
+    }
+
+    async function pull(){
+      if(!isConfigured()) return cached();
+      try{
+        var res = await fetch(API + '/' + BLOB_ID, { cache:'no-store' });
+        if(!res.ok) throw new Error('HTTP ' + res.status);
+        var data = await res.json();
+        cache(data);
+        return data;
+      }catch(e){
+        console.warn('Sync: no se pudo leer la nube, usando copia local', e);
+        return cached();
+      }
+    }
+
+    async function push(data){
+      cache(data);
+      if(!isConfigured()) return false;
+      try{
+        var res = await fetch(API + '/' + BLOB_ID, {
+          method:'PUT',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify(data)
+        });
+        return res.ok;
+      }catch(e){
+        console.warn('Sync: no se pudo guardar en la nube', e);
+        return false;
+      }
+    }
+
+    async function createBlob(initialData){
+      var res = await fetch(API, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify(initialData)
+      });
+      var loc = res.headers.get('Location') || res.headers.get('location');
+      if(!loc) throw new Error('jsonblob no devolvió una ubicación válida');
+      return loc.split('/').pop();
+    }
+
+    return { isConfigured:isConfigured, pull:pull, push:push, cached:cached, createBlob:createBlob };
+  })();
+
+  var CloudState = { personajes:null, economia:null };
+  function pushCloud(){
+    var snapshot = {
+      personajes: CloudState.personajes !== null ? CloudState.personajes : ((Sync.cached()||{}).personajes || []),
+      economia:   CloudState.economia   !== null ? CloudState.economia   : ((Sync.cached()||{}).economia   || [])
+    };
+    return Sync.push(snapshot);
+  }
+
+  var cloudPullPromise = Sync.pull();
+
+  /* ---------- LOGIN UI ---------- */
+  (function(){
+    var authBox = document.getElementById('authBox');
+    var modal = document.getElementById('authModalOverlay');
+    var form = document.getElementById('authForm');
+    var userInput = document.getElementById('authUser');
+    var passInput = document.getElementById('authPass');
+    var errorEl = document.getElementById('authError');
+    var closeBtn = document.getElementById('authModalClose');
+    var cancelBtn = document.getElementById('authCancelBtn');
+    var banner = document.getElementById('cloudSetupBanner');
+    var bannerIdBox = document.getElementById('cloudSetupId');
+    var bannerCreateBtn = document.getElementById('cloudSetupCreateBtn');
+    var bannerCopyBtn = document.getElementById('cloudSetupCopyBtn');
+    if(!authBox || !modal) return;
+
+    function renderAuthBox(){
+      authBox.innerHTML = Auth.isLoggedIn()
+        ? '<span class="auth-user">MK</span><button type="button" class="auth-btn" id="authLogoutBtn">Cerrar sesión</button>'
+        : '<button type="button" class="auth-btn" id="authLoginBtn">Iniciar sesión</button>';
+    }
+    function renderBanner(){
+      if(!banner) return;
+      banner.style.display = (Auth.isLoggedIn() && !Sync.isConfigured()) ? 'flex' : 'none';
+    }
+
+    function openModal(){
+      errorEl.textContent = '';
+      form.reset();
+      modal.classList.add('open');
+      userInput.focus();
+    }
+    function closeModal(){ modal.classList.remove('open'); }
+
+    authBox.addEventListener('click', function(e){
+      if(e.target.id === 'authLoginBtn') openModal();
+      if(e.target.id === 'authLogoutBtn') Auth.logout();
+    });
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e){ if(e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var ok = Auth.login(userInput.value.trim(), passInput.value);
+      if(ok){ closeModal(); }
+      else{
+        errorEl.textContent = 'Usuario o contraseña incorrectos.';
+        passInput.value = '';
+        passInput.focus();
+      }
+    });
+
+    if(bannerCreateBtn){
+      bannerCreateBtn.addEventListener('click', async function(){
+        bannerCreateBtn.disabled = true;
+        bannerCreateBtn.textContent = 'Creando…';
+        try{
+          var initial = {
+            personajes: CloudState.personajes || (Sync.cached()||{}).personajes || [],
+            economia:   CloudState.economia   || (Sync.cached()||{}).economia   || []
+          };
+          var id = await Sync.createBlob(initial);
+          bannerIdBox.textContent = id;
+          bannerIdBox.style.display = 'inline-block';
+          bannerCopyBtn.style.display = 'inline-block';
+          bannerCreateBtn.textContent = '✓ Creado — copia el ID y pégalo en el código';
+        }catch(err){
+          bannerCreateBtn.textContent = 'Error al crear — reintentar';
+          bannerCreateBtn.disabled = false;
+          console.error('No se pudo crear el almacenamiento en la nube', err);
+        }
+      });
+    }
+    if(bannerCopyBtn){
+      bannerCopyBtn.addEventListener('click', function(){
+        var text = bannerIdBox.textContent;
+        if(navigator.clipboard){ navigator.clipboard.writeText(text); }
+        bannerCopyBtn.textContent = '¡Copiado!';
+        setTimeout(function(){ bannerCopyBtn.textContent = 'Copiar ID'; }, 1500);
+      });
+    }
+
+    Auth.onChange(function(){ renderAuthBox(); renderBanner(); });
+    renderAuthBox();
+    renderBanner();
+  })();
+
   /* ---------- MAPA INTERACTIVO ---------- */
   (function(){
     var BIOME_LABELS = {
@@ -1291,22 +1555,32 @@
     }
     buildTagPicker();
 
-    function loadCharacters(){
-      try{
-        var raw = localStorage.getItem(STORAGE_KEY);
-        characters = raw ? JSON.parse(raw) : [];
-      }catch(e){ characters = []; }
+    async function loadCharacters(){
+      var data = await cloudPullPromise;
+      var remote = data && data.personajes;
+      if(remote){
+        characters = remote;
+      }else{
+        try{
+          var raw = localStorage.getItem(STORAGE_KEY);
+          characters = raw ? JSON.parse(raw) : [];
+        }catch(e){ characters = []; }
+      }
+      CloudState.personajes = characters;
       render();
     }
 
     function persist(){
+      CloudState.personajes = characters;
       try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(characters)); }
       catch(e){ console.error('No se pudo guardar el registro de personajes', e); }
+      pushCloud();
     }
 
     function render(){
+      var editable = Auth.isLoggedIn();
       if(!characters.length){
-        grid.innerHTML = '<div class="char-empty">Aún no hay nadie en el registro. Añade el primer personaje del territorio.</div>';
+        grid.innerHTML = '<div class="char-empty">Aún no hay nadie en el registro.' + (editable ? ' Añade el primer personaje del territorio.' : '') + '</div>';
         return;
       }
       grid.innerHTML = characters.map(function(c){
@@ -1317,11 +1591,14 @@
           return '<span class="tag-pill" data-tag="' + k + '">' + escapeHtml(tagLabel(k)) + '</span>';
         }).join('');
         var desc = c.descripcion ? ('<p class="char-desc">' + escapeHtml(c.descripcion) + '</p>') : '';
+        var actions = editable
+          ? '<div class="char-actions">' +
+              '<button class="icon-btn" data-action="edit" aria-label="Editar personaje">✎</button>' +
+              '<button class="icon-btn" data-action="delete" aria-label="Eliminar personaje">🗑</button>' +
+            '</div>'
+          : '';
         return '<div class="char-card" data-id="' + c.id + '">' +
-          '<div class="char-actions">' +
-            '<button class="icon-btn" data-action="edit" aria-label="Editar personaje">✎</button>' +
-            '<button class="icon-btn" data-action="delete" aria-label="Eliminar personaje">🗑</button>' +
-          '</div>' +
+          actions +
           '<div class="char-photo">' + photo + '</div>' +
           '<div class="char-body">' +
             '<h3 class="char-name">' + escapeHtml(c.nombre) + '</h3>' +
@@ -1400,11 +1677,18 @@
     document.getElementById('btnRemovePhoto').addEventListener('click', function(){
       pendingPhoto = null; photoInput.value = ''; updatePhotoPreview();
     });
-    document.getElementById('btnAddChar').addEventListener('click', function(){ openModal(null); });
+    var btnAddChar = document.getElementById('btnAddChar');
+    btnAddChar.addEventListener('click', function(){ openModal(null); });
     document.getElementById('charModalClose').addEventListener('click', closeModal);
     document.getElementById('btnCancelChar').addEventListener('click', closeModal);
     overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
+
+    function updateAuthUI(){
+      btnAddChar.style.display = Auth.isLoggedIn() ? '' : 'none';
+    }
+    updateAuthUI();
+    Auth.onChange(function(){ updateAuthUI(); render(); });
 
     form.addEventListener('submit', function(e){
       e.preventDefault();
@@ -1478,21 +1762,35 @@
       showStatus._t = setTimeout(function(){ statusEl.classList.remove('show'); statusEl.textContent = ''; }, 1600);
     }
 
-    function loadItems(){
-      try{
-        var raw = localStorage.getItem(STORAGE_KEY);
-        items = raw ? JSON.parse(raw) : null;
-      }catch(e){ items = null; }
+    async function loadItems(){
+      var data = await cloudPullPromise;
+      var remote = data && data.economia;
+      if(remote && remote.length){
+        items = remote;
+      }else{
+        try{
+          var raw = localStorage.getItem(STORAGE_KEY);
+          items = raw ? JSON.parse(raw) : null;
+        }catch(e){ items = null; }
+      }
       if(!items || !items.length){
         items = defaultData();
-        persist();
+        persistSilent();
       }
+      CloudState.economia = items;
       render();
     }
 
+    function persistSilent(){
+      CloudState.economia = items;
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
+      catch(e){ console.error('No se pudo guardar la economía', e); }
+      pushCloud();
+    }
+
     function persist(){
-      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); showStatus('Guardado ✓'); }
-      catch(e){ console.error('No se pudo guardar la economía', e); showStatus('Error al guardar'); }
+      persistSilent();
+      showStatus('Guardado ✓');
     }
 
     function catOptions(selected){
@@ -1502,16 +1800,19 @@
     }
 
     function render(){
+      var editable = Auth.isLoggedIn();
       emptyMsg.style.display = items.length ? 'none' : 'block';
       body.innerHTML = items.map(function(it){
         var dimmed = (activeFilter !== 'all' && it.categoria !== activeFilter) ? ' dimmed' : '';
+        var ro = editable ? '' : ' readonly';
+        var dis = editable ? '' : ' disabled';
         return '<tr class="econ-row' + dimmed + '" data-id="' + it.id + '" data-cat="' + it.categoria + '">' +
-          '<td><select class="econ-select" data-field="categoria">' + catOptions(it.categoria) + '</select></td>' +
-          '<td><input type="text" class="econ-input econ-concepto" data-field="concepto" value="' + escapeHtml(it.concepto) + '" placeholder="Concepto"></td>' +
-          '<td><input type="text" class="econ-input econ-valor" data-field="valor" value="' + escapeHtml(it.valor) + '" placeholder="Valor"></td>' +
-          '<td><input type="text" class="econ-input econ-unidad" data-field="unidad" value="' + escapeHtml(it.unidad) + '" placeholder="Unidad / periodo"></td>' +
-          '<td><input type="text" class="econ-input econ-notas" data-field="notas" value="' + escapeHtml(it.notas) + '" placeholder="Notas"></td>' +
-          '<td class="econ-col-actions"><button type="button" class="icon-btn" data-action="delete" aria-label="Eliminar fila">🗑</button></td>' +
+          '<td><select class="econ-select" data-field="categoria"' + dis + '>' + catOptions(it.categoria) + '</select></td>' +
+          '<td><input type="text" class="econ-input econ-concepto" data-field="concepto" value="' + escapeHtml(it.concepto) + '" placeholder="Concepto"' + ro + '></td>' +
+          '<td><input type="text" class="econ-input econ-valor" data-field="valor" value="' + escapeHtml(it.valor) + '" placeholder="Valor"' + ro + '></td>' +
+          '<td><input type="text" class="econ-input econ-unidad" data-field="unidad" value="' + escapeHtml(it.unidad) + '" placeholder="Unidad / periodo"' + ro + '></td>' +
+          '<td><input type="text" class="econ-input econ-notas" data-field="notas" value="' + escapeHtml(it.notas) + '" placeholder="Notas"' + ro + '></td>' +
+          '<td class="econ-col-actions">' + (editable ? '<button type="button" class="icon-btn" data-action="delete" aria-label="Eliminar fila">🗑</button>' : '') + '</td>' +
         '</tr>';
       }).join('');
     }
@@ -1584,6 +1885,12 @@
         });
       });
     });
+
+    function updateAuthUI(){
+      btnAdd.style.display = Auth.isLoggedIn() ? '' : 'none';
+    }
+    updateAuthUI();
+    Auth.onChange(function(){ updateAuthUI(); render(); });
 
     loadItems();
   })();
