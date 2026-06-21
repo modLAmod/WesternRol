@@ -659,6 +659,73 @@
     .modal-card{ padding:1.8rem 1.4rem; }
     .photo-upload{ flex-wrap:wrap; }
   }
+
+  /* ---------- ECONOMÍA ---------- */
+  .econ-toolbar{
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:1rem; margin-bottom:1.8rem;
+  }
+  .econ-filters{ display:flex; flex-wrap:wrap; gap:.5rem; }
+  .econ-chip{
+    font-family:var(--utility); font-size:.66rem; letter-spacing:.05em; text-transform:uppercase;
+    padding:.5rem .85rem; border:1px solid var(--paper-line); background:#EFE2BC; color:var(--ink-soft);
+    cursor:pointer; transition:all .15s;
+  }
+  .econ-chip:hover{ border-color:var(--rust); color:var(--ink); }
+  .econ-chip.active{ background:var(--leather); color:#F4E9CC; border-color:var(--leather); }
+
+  .econ-status{
+    font-family:var(--utility); font-size:.62rem; letter-spacing:.06em; color:#9c8a64;
+    margin-bottom:1rem; min-height:1em;
+  }
+  .econ-status.show{ color:var(--rust); }
+
+  .econ-table-wrap{
+    overflow-x:auto; border:1px solid var(--paper-line);
+    background:#EFE2BC; box-shadow:0 10px 26px rgba(0,0,0,.08);
+  }
+  .econ-table{ width:100%; border-collapse:collapse; min-width:760px; }
+  .econ-table thead th{
+    font-family:var(--utility); font-size:.64rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--rust); text-align:left; padding:.85rem .9rem; border-bottom:2px solid var(--brass);
+    background:#E6D4A4; white-space:nowrap;
+  }
+  .econ-table tbody tr{ border-bottom:1px solid var(--paper-line); transition:background .15s; }
+  .econ-table tbody tr:last-child{ border-bottom:none; }
+  .econ-table tbody tr:hover{ background:#E6D4A4; }
+  .econ-table tbody tr.dimmed{ display:none; }
+  .econ-table td{ padding:.4rem .5rem; vertical-align:middle; }
+  .econ-table td.econ-col-actions{ width:36px; text-align:center; }
+
+  .econ-input{
+    width:100%; font-family:var(--body); font-size:.88rem; color:var(--ink);
+    background:transparent; border:1px solid transparent; padding:.5rem .55rem; border-radius:1px;
+  }
+  .econ-input:hover{ background:#dcc89a; }
+  .econ-input:focus{ outline:none; background:#fbf2da; border-color:var(--rust); }
+  .econ-input.econ-concepto{ font-weight:600; min-width:11rem; }
+  .econ-input.econ-valor{ font-family:var(--utility); color:var(--rust); width:6.5rem; }
+  .econ-input.econ-unidad{ width:8.5rem; }
+  .econ-input.econ-notas{ min-width:14rem; color:var(--ink-soft); font-size:.85rem; }
+
+  .econ-select{
+    font-family:var(--utility); font-size:.62rem; letter-spacing:.04em; text-transform:uppercase;
+    padding:.5rem .55rem; border:1px solid var(--paper-line); cursor:pointer; appearance:none;
+    -webkit-appearance:none; min-width:9.5rem;
+  }
+  .econ-row[data-cat="bienes"] .econ-select{ background:var(--brass); color:var(--leather-deep); border-color:var(--brass); }
+  .econ-row[data-cat="salarios"] .econ-select{ background:#cbb98a; color:var(--ink); border-color:#cbb98a; }
+  .econ-row[data-cat="moneda"] .econ-select{ background:var(--dusk); color:var(--electric); border-color:var(--dusk); }
+  .econ-row[data-cat="comercio"] .econ-select{ background:var(--rust-bright); color:#fff5e6; border-color:var(--rust-bright); }
+
+  .econ-empty{
+    text-align:center; padding:3.2rem 1.4rem; border:1px dashed var(--paper-line);
+    font-style:italic; color:var(--ink-soft); margin-top:1.2rem;
+  }
+
+  @media (max-width:640px){
+    .econ-table{ min-width:680px; }
+  }
 </style>
 </head>
 <body>
@@ -673,6 +740,7 @@
     <li><a href="#ciudad">La Ciudad</a></li>
     <li><a href="#biomas">Territorio</a></li>
     <li><a href="#personajes">Personajes</a></li>
+    <li><a href="#economia">Economía</a></li>
     <li><a href="#buscan">Se Buscan</a></li>
   </ul>
 </nav>
@@ -866,6 +934,46 @@
       </div>
 
       <div class="char-grid" id="charGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===================== ECONOMÍA ===================== -->
+  <section id="economia" class="section paper-deep">
+    <div class="section-inner">
+      <p class="eyebrow">Consejo de Energía y Comercio</p>
+      <h2 class="section-title">Economía del Territorio</h2>
+      <div class="rule"></div>
+      <p class="lede">Precios, salarios, moneda y rutas comerciales de 1870. Edita cualquier celda de la tabla para ajustar la economía a tu partida — los cambios se guardan automáticamente en este navegador.</p>
+
+      <div class="econ-toolbar">
+        <div class="econ-filters" id="econFilters">
+          <button type="button" class="econ-chip active" data-filter="all">Todo</button>
+          <button type="button" class="econ-chip" data-filter="bienes">Bienes y Servicios</button>
+          <button type="button" class="econ-chip" data-filter="salarios">Salarios</button>
+          <button type="button" class="econ-chip" data-filter="moneda">Moneda e Impuestos</button>
+          <button type="button" class="econ-chip" data-filter="comercio">Comercio</button>
+        </div>
+        <button type="button" class="btn-add-char" id="btnAddEcon">+ Añadir Fila</button>
+      </div>
+
+      <p class="econ-status" id="econStatus"></p>
+
+      <div class="econ-table-wrap">
+        <table class="econ-table">
+          <thead>
+            <tr>
+              <th>Categoría</th>
+              <th>Concepto</th>
+              <th>Valor</th>
+              <th>Unidad / Periodo</th>
+              <th>Notas</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="econBody"></tbody>
+        </table>
+      </div>
+      <p class="econ-empty" id="econEmpty" style="display:none;">Aún no hay datos económicos. Pulsa «+ Añadir Fila» para crear el primero.</p>
     </div>
   </section>
 
@@ -1316,6 +1424,175 @@
     });
 
     loadCharacters();
+  })();
+
+  /* ---------- ECONOMÍA ---------- */
+  (function(){
+    var CATS = [
+      { key:'bienes',   label:'Bienes y Servicios' },
+      { key:'salarios',  label:'Salarios' },
+      { key:'moneda',    label:'Moneda e Impuestos' },
+      { key:'comercio',  label:'Comercio' }
+    ];
+    var STORAGE_KEY = 'economia:list';
+    var hasStorage = (typeof window.storage !== 'undefined');
+    var items = [];
+    var activeFilter = 'all';
+
+    var body = document.getElementById('econBody');
+    if(!body) return;
+    var emptyMsg = document.getElementById('econEmpty');
+    var statusEl = document.getElementById('econStatus');
+    var btnAdd = document.getElementById('btnAddEcon');
+
+    function catLabel(key){
+      var f = CATS.filter(function(c){ return c.key === key; })[0];
+      return f ? f.label : key;
+    }
+
+    function defaultData(){
+      return [
+        { id:uid(), categoria:'bienes', concepto:'Pan (hogaza)', valor:'$0.05', unidad:'por unidad', notas:'Precio medio en tiendas generales del Oeste.' },
+        { id:uid(), categoria:'bienes', concepto:'Whisky', valor:'$0.10', unidad:'por trago', notas:'Tarifa estándar de saloon.' },
+        { id:uid(), categoria:'bienes', concepto:'Botas de cuero', valor:'$6.00', unidad:'por par', notas:'Artículo duradero, muy valorado en la frontera.' },
+        { id:uid(), categoria:'bienes', concepto:'Habitación de hotel', valor:'$1.50', unidad:'por noche', notas:'Distrito Alto cobra el doble.' },
+        { id:uid(), categoria:'bienes', concepto:'Rifle Winchester', valor:'$25.00', unidad:'por unidad', notas:'Modelo recién llegado al Territorio.' },
+
+        { id:uid(), categoria:'salarios', concepto:'Vaquero', valor:'$1.00', unidad:'por día', notas:'Más comida y alojamiento en el rancho.' },
+        { id:uid(), categoria:'salarios', concepto:'Minero', valor:'$3.50', unidad:'por día', notas:'Trabajo peligroso en túneles agotados.' },
+        { id:uid(), categoria:'salarios', concepto:'Obrero ferroviario', valor:'$1.75', unidad:'por día', notas:'Jornadas largas, alta rotación.' },
+        { id:uid(), categoria:'salarios', concepto:'Sheriff', valor:'$125.00', unidad:'por mes', notas:'Pagado por el Consejo del Territorio.' },
+
+        { id:uid(), categoria:'moneda', concepto:'Dólar de oro (Eagle)', valor:'$10.00', unidad:'equivalencia oficial', notas:'Escaso fuera del Distrito Alto.' },
+        { id:uid(), categoria:'moneda', concepto:'Greenback (papel)', valor:'$0.85', unidad:'por $1 en oro', notas:'Depreciado tras la Guerra Civil.' },
+        { id:uid(), categoria:'moneda', concepto:'Impuesto territorial', valor:'1.5%', unidad:'anual sobre propiedad', notas:'Recaudado por compañías privadas.' },
+
+        { id:uid(), categoria:'comercio', concepto:'Ferrocarril Transcontinental', valor:'Alta', unidad:'tráfico diario', notas:'Principal vía de mercancías hacia el Este.' },
+        { id:uid(), categoria:'comercio', concepto:'Ruta del ganado', valor:'Estacional', unidad:'primavera–verano', notas:'Conduce reses hacia los mercados del Este.' }
+      ];
+    }
+
+    function uid(){ return 'e' + Date.now() + Math.random().toString(16).slice(2); }
+
+    function showStatus(msg){
+      if(!statusEl) return;
+      statusEl.textContent = msg;
+      statusEl.classList.add('show');
+      clearTimeout(showStatus._t);
+      showStatus._t = setTimeout(function(){ statusEl.classList.remove('show'); statusEl.textContent = ''; }, 1600);
+    }
+
+    async function loadItems(){
+      if(hasStorage){
+        try{
+          var res = await window.storage.get(STORAGE_KEY, false);
+          items = (res && res.value) ? JSON.parse(res.value) : null;
+        }catch(e){ items = null; }
+      }
+      if(!items || !items.length){
+        items = defaultData();
+        persist();
+      }
+      render();
+    }
+
+    async function persist(){
+      if(!hasStorage) return;
+      try{ await window.storage.set(STORAGE_KEY, JSON.stringify(items), false); showStatus('Guardado ✓'); }
+      catch(e){ console.error('No se pudo guardar la economía', e); showStatus('Error al guardar'); }
+    }
+
+    function catOptions(selected){
+      return CATS.map(function(c){
+        return '<option value="' + c.key + '"' + (c.key === selected ? ' selected' : '') + '>' + escapeHtml(c.label) + '</option>';
+      }).join('');
+    }
+
+    function render(){
+      emptyMsg.style.display = items.length ? 'none' : 'block';
+      body.innerHTML = items.map(function(it){
+        var dimmed = (activeFilter !== 'all' && it.categoria !== activeFilter) ? ' dimmed' : '';
+        return '<tr class="econ-row' + dimmed + '" data-id="' + it.id + '" data-cat="' + it.categoria + '">' +
+          '<td><select class="econ-select" data-field="categoria">' + catOptions(it.categoria) + '</select></td>' +
+          '<td><input type="text" class="econ-input econ-concepto" data-field="concepto" value="' + escapeHtml(it.concepto) + '" placeholder="Concepto"></td>' +
+          '<td><input type="text" class="econ-input econ-valor" data-field="valor" value="' + escapeHtml(it.valor) + '" placeholder="Valor"></td>' +
+          '<td><input type="text" class="econ-input econ-unidad" data-field="unidad" value="' + escapeHtml(it.unidad) + '" placeholder="Unidad / periodo"></td>' +
+          '<td><input type="text" class="econ-input econ-notas" data-field="notas" value="' + escapeHtml(it.notas) + '" placeholder="Notas"></td>' +
+          '<td class="econ-col-actions"><button type="button" class="icon-btn" data-action="delete" aria-label="Eliminar fila">🗑</button></td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    function findItem(id){
+      return items.filter(function(it){ return it.id === id; })[0];
+    }
+
+    body.addEventListener('change', function(e){
+      var field = e.target.dataset.field;
+      if(!field) return;
+      var row = e.target.closest('tr');
+      var it = findItem(row.dataset.id);
+      if(!it) return;
+      it[field] = e.target.value;
+      if(field === 'categoria'){
+        row.dataset.cat = it.categoria;
+        if(activeFilter !== 'all' && it.categoria !== activeFilter){ row.classList.add('dimmed'); }
+        else{ row.classList.remove('dimmed'); }
+      }
+      persist();
+    });
+
+    body.addEventListener('blur', function(e){
+      var field = e.target.dataset.field;
+      if(!field || field === 'categoria') return;
+      var row = e.target.closest('tr');
+      var it = findItem(row.dataset.id);
+      if(!it) return;
+      if(it[field] !== e.target.value){
+        it[field] = e.target.value;
+        persist();
+      }
+    }, true);
+
+    body.addEventListener('click', function(e){
+      var btn = e.target.closest('button[data-action="delete"]');
+      if(!btn) return;
+      var row = btn.closest('tr');
+      var it = findItem(row.dataset.id);
+      if(!it) return;
+      if(confirm('¿Eliminar "' + it.concepto + '" de la tabla?')){
+        items = items.filter(function(x){ return x.id !== it.id; });
+        persist();
+        render();
+      }
+    });
+
+    btnAdd.addEventListener('click', function(){
+      var fresh = { id:uid(), categoria:'bienes', concepto:'', valor:'', unidad:'', notas:'' };
+      items.push(fresh);
+      activeFilter = 'all';
+      document.querySelectorAll('#econFilters .econ-chip').forEach(function(c){
+        c.classList.toggle('active', c.dataset.filter === 'all');
+      });
+      persist();
+      render();
+      var newRow = body.querySelector('tr[data-id="' + fresh.id + '"] .econ-concepto');
+      if(newRow) newRow.focus();
+    });
+
+    document.querySelectorAll('#econFilters .econ-chip').forEach(function(chip){
+      chip.addEventListener('click', function(){
+        document.querySelectorAll('#econFilters .econ-chip').forEach(function(c){ c.classList.remove('active'); });
+        chip.classList.add('active');
+        activeFilter = chip.dataset.filter;
+        document.querySelectorAll('.econ-row').forEach(function(row){
+          var show = (activeFilter === 'all' || row.dataset.cat === activeFilter);
+          row.classList.toggle('dimmed', !show);
+        });
+      });
+    });
+
+    loadItems();
   })();
 </script>
 </body>
